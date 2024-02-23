@@ -1,8 +1,10 @@
 package config
 
 type Config struct {
-	TZ       string
-	Database Database
+	TZ          string
+	Database    Database
+	HttpApi     HttpApi
+	HealthToken string
 }
 
 type Database struct {
@@ -15,4 +17,9 @@ type MySql struct {
 	Username string
 	Password string
 	DbName   string
+}
+
+type HttpApi struct {
+	Host string
+	Port int
 }

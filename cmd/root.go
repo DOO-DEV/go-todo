@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"go-todo/cmd/migrator"
+	"go-todo/cmd/server"
 	"go-todo/internal/config"
 	"log"
 	"os/signal"
@@ -30,6 +31,7 @@ func Execute() {
 
 	root.AddCommand(
 		migrator.Migrator{}.Command(ctx, cfg),
+		server.Server{}.Command(ctx, cfg),
 	)
 
 	err = root.Execute()

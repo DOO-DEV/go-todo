@@ -15,3 +15,14 @@
 - [ ] add reminder and have ability to set a time range for each todo.
 - [ ] add notification for reminder like %x of remaining time left to do the job?!!
 - [ ] add offline first capability
+
+### project scope:
+
+- [ ] add linter
+- [ ] add swagger for api docs
+- [ ] add logger
+- [ ] add metrics
+- [ ] add docker file for project
+- [ ] add tests. both uint and integration
+- [ ] separate services into microservices if needed??
+- [ ] check for architecture and pattern base of offline first scenario

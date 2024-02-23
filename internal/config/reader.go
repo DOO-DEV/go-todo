@@ -30,5 +30,10 @@ func Load() (*Config, error) {
 				DbName:   loadString("DATABASE_MYSQL_DBNAME"),
 			},
 		},
+		HttpApi: HttpApi{
+			Host: loadString("HTTP_API_HOST"),
+			Port: loadInt("HTTP_API_PORT"),
+		},
+		HealthToken: loadString("HEALTH_TOKEN"),
 	}, nil
 }
