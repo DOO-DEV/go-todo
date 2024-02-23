@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:8.0
+    platform: ${DOCKER_PLATFORM:-linux/amd64}
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "${DATABASE_MYSQL_NAME:-todo}"
+      MYSQL_USER: "${DATABASE_MYSQL_USER:-todo}"
+      MYSQL_PASSWORD: "${DATABASE_MYSQL_PASSWORD:-todo}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: 'on-failure'
+
+volumes:
+  mysql-data:
