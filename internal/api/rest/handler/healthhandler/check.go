@@ -1,4 +1,4 @@
-package health
+package healthhandler
 
 import (
 	"github.com/labstack/echo/v4"

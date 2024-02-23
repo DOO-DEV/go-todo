@@ -5,15 +5,22 @@ import (
 	"github.com/spf13/cobra"
 	"go-todo/infra/mysql"
 	"go-todo/internal/api/rest"
-	healthH "go-todo/internal/api/rest/handler/health"
+	"go-todo/internal/api/rest/handler/healthhandler"
+	"go-todo/internal/api/rest/handler/userhandler"
 	"go-todo/internal/config"
-	"go-todo/internal/service/health"
-	"log/slog"
+	"go-todo/internal/repository/user"
+	"go-todo/internal/service/healthservice"
+	"go-todo/internal/service/userservice"
+	"go-todo/pkg/gorm"
+	"go.uber.org/zap"
 )
 
-type Server struct{}
+type Server struct {
+	logger *zap.Logger
+}
 
-func (s Server) Command(ctx context.Context, cfg *config.Config) *cobra.Command {
+func (s Server) Command(ctx context.Context, cfg *config.Config, logger *zap.Logger) *cobra.Command {
+	s.logger = logger
 	c := &cobra.Command{
 		Use:   "server",
 		Short: "http server",
@@ -36,22 +43,32 @@ func (s Server) main(ctx context.Context, cfg *config.Config) {
 		Timezone:     cfg.TZ,
 	})
 	if err != nil {
-		slog.Error("failed to connect to db: ", err)
+		s.logger.Error("failed to connect to db", zap.Error(err))
 		return
 	}
+	gormDb, err := gorm.NewMysqlGorm(db, cfg.AppDebug)
+	if err != nil {
+		s.logger.Fatal(err.Error())
+	}
+
+	// setup repositories
+	userRepo := user.New(gormDb)
 
 	// setup services
-	healthSvc := health.New(db, cfg.HealthToken)
+	healthSvc := healthservice.New(db, cfg.HealthToken)
+	userSvc := userservice.New(userRepo)
 
 	// setup handlers
-	healthHandler := healthH.New(healthSvc)
+	healthHandler := healthhandler.New(healthSvc)
+	userHandler := userhandler.New(userSvc)
 
-	server := rest.New(cfg.HttpApi)
+	l := s.logger.Named("server:")
+	server := rest.New(cfg.HttpApi, l)
 	server.SetupMonitoringRoutes(healthHandler)
-	server.SetupRoutes()
+	server.SetupRoutes(userHandler)
 
 	if err := server.Serve(ctx); err != nil {
-		slog.Error("server error: ", err)
+		s.logger.Error("server error", zap.Error(err))
 		return
 	}
 }

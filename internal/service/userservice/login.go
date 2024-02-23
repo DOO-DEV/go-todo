@@ -1,4 +1,4 @@
-package user
+package userservice
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"go-todo/pkg/password"
 )
 
-func (s Service) Login(ctx context.Context, req request.LoginUserRequest, userId uint) (domain.User, error) {
+func (s Service) Login(ctx context.Context, req request.LoginUserRequest) (domain.User, error) {
 	user, err := s.userRepository.LoginUser(ctx, req.Username)
 	if err != nil {
 		return domain.User{}, err

@@ -3,7 +3,6 @@ package migrator
 import (
 	"context"
 	"errors"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	migrateMysql "github.com/golang-migrate/migrate/v4/database/mysql"
@@ -11,15 +10,18 @@ import (
 	"github.com/spf13/cobra"
 	"go-todo/infra/mysql"
 	"go-todo/internal/config"
-	"log"
+	"go.uber.org/zap"
 )
 
 type Migrator struct {
 	up   bool
 	down bool
+
+	logger *zap.Logger
 }
 
-func (m Migrator) Command(ctx context.Context, cfg *config.Config) *cobra.Command {
+func (m Migrator) Command(ctx context.Context, cfg *config.Config, logger *zap.Logger) *cobra.Command {
+	m.logger = logger
 	cmd := &cobra.Command{
 		Use:   "migrator",
 		Short: "handle migrations",
@@ -53,32 +55,31 @@ func (m Migrator) Up(ctx context.Context, cfg *config.Config) {
 		Timezone:     cfg.TZ,
 	})
 	if err != nil {
-		log.Fatalf("can't connect to mysql: %v", err)
+		m.logger.Fatal("can't connect to mysql", zap.Error(err))
 	}
 	defer db.Close()
 
 	driver, err := migrateMysql.WithInstance(db, &migrateMysql.Config{})
 	if err != nil {
-		log.Fatalf("migration driver failed: %v\n", err)
+		m.logger.Fatal("migration driver failed", zap.Error(err))
 	}
 
 	dir := "file://migrations"
 	mi, err := migrate.NewWithDatabaseInstance(dir, "public", driver)
 	if err != nil {
-		fmt.Println("error: ", err)
-		log.Fatalf("failed to init migration: %v\n", err)
+		m.logger.Fatal("failed to init migration", zap.Error(err))
 	}
 
-	log.Println("migration starting")
+	m.logger.Info("migration starting")
 
 	if err := mi.Up(); err != nil {
 		if !errors.Is(err, migrate.ErrNoChange) {
-			log.Fatalf("migration failed: %v\n", err)
+			m.logger.Fatal("migration failed", zap.Error(err))
 		}
-		log.Println("migration no change")
+		m.logger.Info("migration no change")
 	}
 
-	log.Println("migration successful")
+	m.logger.Info("migration successful")
 }
 
 func (m Migrator) Down(ctx context.Context, cfg *config.Config) {
@@ -91,29 +92,29 @@ func (m Migrator) Down(ctx context.Context, cfg *config.Config) {
 		Timezone:     cfg.TZ,
 	})
 	if err != nil {
-		log.Fatalf("can't connect to mysql: %v", err)
+		m.logger.Fatal("can't connect to mysql", zap.Error(err))
 	}
 	defer db.Close()
 
 	driver, err := migrateMysql.WithInstance(db, &migrateMysql.Config{})
 	if err != nil {
-		log.Fatalf("migration driver failed: %v\n", err)
+		m.logger.Fatal("migration driver failed", zap.Error(err))
 	}
 
 	dir := "file://migrations"
 	mi, err := migrate.NewWithDatabaseInstance(dir, "mysql", driver)
 	if err != nil {
-		log.Fatalf("failed to init migration: %v\n", err)
+		m.logger.Fatal("failed to init migration", zap.Error(err))
 	}
 
-	log.Println("migration down starting")
+	m.logger.Info("migration down starting")
 
 	if err := mi.Down(); err != nil {
 		if !errors.Is(err, migrate.ErrNoChange) {
-			log.Fatalf("migration downfailed: %v\n", err)
+			m.logger.Fatal("migration downfailed", zap.Error(err))
 		}
-		log.Println("migration no change")
+		m.logger.Info("migration no change")
 	}
 
-	log.Println("migration down successful")
+	m.logger.Info("migration down successful")
 }

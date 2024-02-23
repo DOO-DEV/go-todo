@@ -22,6 +22,7 @@ func NewClient(ctx context.Context, cfg *Config) (*sql.DB, error) {
 		DBName:          cfg.DatabaseName,
 		Loc:             loc,
 		MultiStatements: true,
+		ParseTime:       true,
 	}
 
 	db, err := sql.Open("mysql", c.FormatDSN())

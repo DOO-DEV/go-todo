@@ -18,7 +18,8 @@ env:
 
 build:
 	go build -v -ldflags "-s" -o build/ ./cmd/...
-
+server:
+	go run main.go server
 lint:
 	golangci-lint run
 up:

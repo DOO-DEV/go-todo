@@ -2,6 +2,8 @@ package config
 
 type Config struct {
 	TZ          string
+	LogLevel    string
+	AppDebug    bool
 	Database    Database
 	HttpApi     HttpApi
 	HealthToken string

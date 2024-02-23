@@ -20,7 +20,9 @@ func Load() (*Config, error) {
 	viper.AutomaticEnv()
 
 	return &Config{
-		TZ: loadString("TZ"),
+		TZ:       loadString("TZ"),
+		LogLevel: loadString("LOG_LEVEL"),
+		AppDebug: loadBool("APP_DEBUG"),
 		Database: Database{
 			MySql: MySql{
 				Host:     loadString("DATABASE_MYSQL_HOST"),
