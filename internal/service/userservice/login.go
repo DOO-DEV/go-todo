@@ -15,7 +15,7 @@ func (s Service) Login(ctx context.Context, req request.LoginUserRequest) (domai
 	}
 
 	if err := password.ComparePassword(user.Password, req.Password); err != nil {
-		return domain.User{}, errors.ErrWrongLogin
+		return domain.User{}, errors.ErrNotFound
 	}
 
 	return user, nil

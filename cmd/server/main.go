@@ -11,6 +11,7 @@ import (
 	"go-todo/internal/repository/user"
 	"go-todo/internal/service/healthservice"
 	"go-todo/internal/service/userservice"
+	"go-todo/internal/validation/uservalidation"
 	"go-todo/pkg/gorm"
 	"go.uber.org/zap"
 )
@@ -58,9 +59,12 @@ func (s Server) main(ctx context.Context, cfg *config.Config) {
 	healthSvc := healthservice.New(db, cfg.HealthToken)
 	userSvc := userservice.New(userRepo)
 
+	// setup validators
+	userValidator := uservalidation.New(userRepo)
+
 	// setup handlers
 	healthHandler := healthhandler.New(healthSvc)
-	userHandler := userhandler.New(userSvc)
+	userHandler := userhandler.New(userSvc, userValidator)
 
 	l := s.logger.Named("server:")
 	server := rest.New(cfg.HttpApi, l)

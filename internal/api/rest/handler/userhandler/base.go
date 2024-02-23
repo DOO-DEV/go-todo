@@ -1,11 +1,18 @@
 package userhandler
 
-import "go-todo/internal/service/userservice"
+import (
+	"go-todo/internal/service/userservice"
+	"go-todo/internal/validation/uservalidation"
+)
 
 type Handler struct {
-	userSvc userservice.Service
+	userSvc   userservice.Service
+	validator uservalidation.Validator
 }
 
-func New(userSvc userservice.Service) Handler {
-	return Handler{userSvc: userSvc}
+func New(userSvc userservice.Service, validator uservalidation.Validator) Handler {
+	return Handler{
+		userSvc:   userSvc,
+		validator: validator,
+	}
 }

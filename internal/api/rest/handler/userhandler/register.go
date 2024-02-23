@@ -11,10 +11,12 @@ func (h Handler) Register(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return echo.ErrUnprocessableEntity
 	}
-
 	// TODO: check for auth
-	// TODO: validate
 
+	ctx := c.Request().Context()
+	if err := h.validator.ValidateRegisterUserRequest(ctx, &req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err)
+	}
 	// TODO: make a transformer don't send bare domain to client
 	d, err := h.userSvc.Register(c.Request().Context(), req)
 	if err != nil {
