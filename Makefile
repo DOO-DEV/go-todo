@@ -20,6 +20,10 @@ build:
 	go build -v -ldflags "-s" -o build/ ./cmd/...
 server:
 	go run main.go server
+migrate-up:
+	go run main.go migrator --up
+migrate-down:
+	go run main.go migrator --down
 lint:
 	golangci-lint run
 up:
@@ -28,7 +32,6 @@ log:
 	$(COMPOSE_COMMAND) -f $(COMPOSE_FILES) logs -f $(RUN_ARGS)
 down:
 	$(COMPOSE_COMMAND) -f $(COMPOSE_FILES) down --remove-orphans
-
 purge:
 	$(COMPOSE_COMMAND) -f $(COMPOSE_FILES) down --remove-orphans --volumes
 status:

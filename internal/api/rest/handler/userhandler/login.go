@@ -31,5 +31,5 @@ func (h Handler) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, d)
+	return c.JSON(http.StatusOK, h.transformer.TransformUserLogin(d))
 }

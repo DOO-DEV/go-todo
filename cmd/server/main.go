@@ -7,6 +7,7 @@ import (
 	"go-todo/internal/api/rest"
 	"go-todo/internal/api/rest/handler/healthhandler"
 	"go-todo/internal/api/rest/handler/userhandler"
+	"go-todo/internal/api/rest/transformer/usertransformer"
 	"go-todo/internal/config"
 	"go-todo/internal/repository/user"
 	"go-todo/internal/service/healthservice"
@@ -62,9 +63,12 @@ func (s Server) main(ctx context.Context, cfg *config.Config) {
 	// setup validators
 	userValidator := uservalidation.New(userRepo)
 
+	// setup transformers
+	userTransformer := usertransformer.New()
+
 	// setup handlers
 	healthHandler := healthhandler.New(healthSvc)
-	userHandler := userhandler.New(userSvc, userValidator)
+	userHandler := userhandler.New(userSvc, userValidator, userTransformer)
 
 	l := s.logger.Named("server:")
 	server := rest.New(cfg.HttpApi, l)
