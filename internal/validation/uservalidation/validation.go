@@ -21,7 +21,7 @@ func (v Validator) ValidateRegisterUserRequest(ctx context.Context, req *request
 func (v Validator) ValidateLoginUserRequest(ctx context.Context, req *request.LoginUserRequest) error {
 	return validation.ValidateStructWithContext(ctx, req,
 		validation.Field(&req.Password, validation.Required),
-		validation.Field(&req.Username, validation.Required, validation.By(v.isUsernameExists)),
+		validation.Field(&req.Username, validation.Required),
 	)
 }
 
@@ -39,20 +39,4 @@ func (v Validator) isUsernameUnique(val interface{}) error {
 	}
 
 	return cErr.ErrUsernameIsNotUnique
-}
-
-func (v Validator) isUsernameExists(val interface{}) error {
-	username, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("validation failed")
-	}
-	_, err := v.userRepository.GetUserByUsername(context.Background(), username)
-	if err != nil {
-		if errors.Is(err, cErr.ErrNotFound) {
-			return err
-		}
-		return cErr.ErrSomethingWentWrong
-	}
-
-	return nil
 }

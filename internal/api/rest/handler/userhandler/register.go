@@ -25,5 +25,5 @@ func (h Handler) Register(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, h.transformer.TransformUserRegister(d))
+	return c.JSON(http.StatusOK, h.transformer.TransformAuthCredentials(d))
 }

@@ -9,7 +9,9 @@ import (
 	"go-todo/internal/api/rest/handler/userhandler"
 	"go-todo/internal/api/rest/transformer/usertransformer"
 	"go-todo/internal/config"
+	tokenrepository "go-todo/internal/repository/token"
 	"go-todo/internal/repository/user"
+	"go-todo/internal/service/authservice"
 	"go-todo/internal/service/healthservice"
 	"go-todo/internal/service/userservice"
 	"go-todo/internal/validation/uservalidation"
@@ -55,10 +57,12 @@ func (s Server) main(ctx context.Context, cfg *config.Config) {
 
 	// setup repositories
 	userRepo := user.New(gormDb)
+	tokenRepo := tokenrepository.New(gormDb)
 
 	// setup services
 	healthSvc := healthservice.New(db, cfg.HealthToken)
-	userSvc := userservice.New(userRepo)
+	authSvc := authservice.New(tokenRepo, cfg.UserToken)
+	userSvc := userservice.New(userRepo, authSvc)
 
 	// setup validators
 	userValidator := uservalidation.New(userRepo)

@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type Config struct {
 	TZ          string
 	LogLevel    string
@@ -7,6 +9,7 @@ type Config struct {
 	Database    Database
 	HttpApi     HttpApi
 	HealthToken string
+	UserToken   UserToken
 }
 
 type Database struct {
@@ -24,4 +27,13 @@ type MySql struct {
 type HttpApi struct {
 	Host string
 	Port int
+}
+
+type UserToken struct {
+	AccessTokenTTL     time.Duration
+	RefreshTokenTTL    time.Duration
+	PrivateKey         string
+	PublicKey          string
+	PrivateKeyFilePath string
+	PublicKeyFilePath  string
 }

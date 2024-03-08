@@ -37,5 +37,13 @@ func Load() (*Config, error) {
 			Port: loadInt("HTTP_API_PORT"),
 		},
 		HealthToken: loadString("HEALTH_TOKEN"),
+		UserToken: UserToken{
+			AccessTokenTTL:     loadDuration("ACCESS_TOKEN_TTL"),
+			RefreshTokenTTL:    loadDuration("REFRESH_TOKEN_TTL"),
+			PrivateKey:         loadString("TOKEN_PRIVATE_KEY"),
+			PublicKey:          loadString("TOKEN_PUBLIC_KEY"),
+			PrivateKeyFilePath: loadString("TOKEN_PRIVATE_KEY_FILE_PATH"),
+			PublicKeyFilePath:  loadString("TOKEN_PUBLIC_KEY_KEY_FILE_PATH"),
+		},
 	}, nil
 }

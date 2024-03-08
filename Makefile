@@ -37,4 +37,5 @@ purge:
 status:
 	$(COMPOSE_COMMAND) -f $(COMPOSE_FILES) ps
 mysql-shell:
-	$(COMPOSE_COMMAND) -f $(COMPOSE_FILES) exec -u 0 mysql mysql -hmysql -u$(MYSQL_USER) -D$(MYSQL_DATABASE) -p$(MYSQL_PASSWORD)
+	$(COMPOSE_COMMAND) -f $(COMPOSE_FILES) exec -u 0 mysql mysql -hmysql -u"todo" -D"todo" -p"todo"
+	@echo $(MYSQL_USER)

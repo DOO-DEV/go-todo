@@ -1,15 +1,17 @@
 package usertransformer
 
-import "go-todo/internal/domain"
+import (
+	"go-todo/internal/domain"
+)
 
 type response struct {
-	Username string `json:"username"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
-func (t Transformer) TransformUserRegister(user domain.User) response {
-	return response{Username: user.Username}
-}
-
-func (t Transformer) TransformUserLogin(user domain.User) response {
-	return response{Username: user.Username}
+func (t Transformer) TransformAuthCredentials(auth domain.Auth) response {
+	return response{
+		AccessToken:  auth.AccessToken,
+		RefreshToken: auth.RefreshToken,
+	}
 }

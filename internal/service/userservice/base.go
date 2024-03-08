@@ -10,12 +10,18 @@ type userRepository interface {
 	LoginUser(ctx context.Context, username string) (domain.User, error)
 }
 
-type Service struct {
-	userRepository userRepository
+type tokenGenerator interface {
+	CreateUserTokens(ctx context.Context, user domain.User) (domain.Auth, error)
 }
 
-func New(userRepo userRepository) Service {
+type Service struct {
+	userRepository userRepository
+	tokenGenerator tokenGenerator
+}
+
+func New(userRepo userRepository, tokenGenerator tokenGenerator) Service {
 	return Service{
 		userRepository: userRepo,
+		tokenGenerator: tokenGenerator,
 	}
 }

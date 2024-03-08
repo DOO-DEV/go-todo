@@ -8,15 +8,20 @@ import (
 	"go-todo/pkg/password"
 )
 
-func (s Service) Login(ctx context.Context, req request.LoginUserRequest) (domain.User, error) {
+func (s Service) Login(ctx context.Context, req request.LoginUserRequest) (domain.Auth, error) {
 	user, err := s.userRepository.LoginUser(ctx, req.Username)
 	if err != nil {
-		return domain.User{}, err
+		return domain.Auth{}, err
 	}
 
 	if err := password.ComparePassword(user.Password, req.Password); err != nil {
-		return domain.User{}, errors.ErrNotFound
+		return domain.Auth{}, errors.ErrNotFound
 	}
 
-	return user, nil
+	authResult, err := s.tokenGenerator.CreateUserTokens(ctx, domain.User{ID: user.ID, Username: user.Username})
+	if err != nil {
+		return domain.Auth{}, err
+	}
+
+	return authResult, nil
 }

@@ -8,10 +8,10 @@ import (
 	"go-todo/pkg/password"
 )
 
-func (s Service) Register(ctx context.Context, req request.RegisterUserRequest) (domain.User, error) {
+func (s Service) Register(ctx context.Context, req request.RegisterUserRequest) (domain.Auth, error) {
 	hashedPasswd, err := password.HashPassword(req.Password)
 	if err != nil {
-		return domain.User{}, errors.ErrSomethingWentWrong
+		return domain.Auth{}, errors.ErrSomethingWentWrong
 	}
 
 	user := domain.User{
@@ -21,8 +21,13 @@ func (s Service) Register(ctx context.Context, req request.RegisterUserRequest) 
 	}
 
 	if _, err := s.userRepository.RegisterUser(ctx, user); err != nil {
-		return domain.User{}, err
+		return domain.Auth{}, err
 	}
 
-	return user, nil
+	authResult, err := s.tokenGenerator.CreateUserTokens(ctx, domain.User{ID: user.ID, Username: user.Username})
+	if err != nil {
+		return domain.Auth{}, err
+	}
+
+	return authResult, nil
 }
